@@ -48,9 +48,9 @@ var TooLongErrorFormat = "%vTooLong"
 var MalformedJsonBody = "MalformedJsonBody"
 
 // here need to be a pointer
-func (finder *Finder) Default(v interface{}) *Finder {
+func (finder Finder) Default(v interface{}) *Finder {
 	finder.defaultValue = v
-	return finder
+	return &finder
 }
 
 func (finder Finder) FindString(paths ...interface{}) (string, error) {
@@ -191,13 +191,12 @@ func (finder Finder) RequireMap(paths ...interface{}) map[string]interface{} {
 	return m
 }
 
-func (finder *Finder) RequireString(paths ...interface{}) string {
+func (finder Finder) RequireString(paths ...interface{}) string {
 	s, err := finder.FindString(paths...)
 	if err != nil && finder.defaultValue != nil {
 		s = finder.defaultValue.(string)
 		err = nil
 	}
-	finder.defaultValue = nil
 	if err != nil {
 		doPanic(InvalidErrorFormat, paths...)
 	}

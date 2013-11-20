@@ -24,6 +24,8 @@ type Finder struct {
 	value interface{}
 	err   error
 	req   *http.Request
+
+	defaultValue interface{}
 }
 
 var WrongTypeError = errors.New("jas.Finder: wrong type")
@@ -44,6 +46,12 @@ var NotPositiveErrorFormat = "%vNotPositive"
 var TooShortErrorFormat = "%vTooShort"
 var TooLongErrorFormat = "%vTooLong"
 var MalformedJsonBody = "MalformedJsonBody"
+
+// here need to be a pointer
+func (finder *Finder) Default(v interface{}) *Finder{
+	finder.defaultValue = v
+	return finder
+}
 
 func (finder Finder) FindString(paths ...interface{}) (string, error) {
 	if s := finder.findFormString(paths...); s != "" {
@@ -186,6 +194,9 @@ func (finder Finder) RequireMap(paths ...interface{}) map[string]interface{} {
 func (finder Finder) RequireString(paths ...interface{}) string {
 	s, err := finder.FindString(paths...)
 	if err != nil {
+		if finder.defaultValue != nil {
+			return finder.defaultValue.(string)
+		}
 		doPanic(InvalidErrorFormat, paths...)
 	}
 	return s

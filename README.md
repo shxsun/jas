@@ -69,6 +69,11 @@ Define a struct type and its methods, methods should have one argement of type *
         http.ListenAndServe(":8080", nil)
     }
 
+## Experiment Features
+
+Default value, if no value request, then default value used(now only RequireString OK)
+
+	greet := ctx.Default("hi").RequireString("greet")
 
 ## Documentation
 

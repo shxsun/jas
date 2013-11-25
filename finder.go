@@ -47,7 +47,6 @@ var TooShortErrorFormat = "%vTooShort"
 var TooLongErrorFormat = "%vTooLong"
 var MalformedJsonBody = "MalformedJsonBody"
 
-// here need to be a pointer
 func (finder Finder) Default(v interface{}) *Finder {
 	finder.defaultValue = v
 	return &finder
@@ -203,7 +202,7 @@ func (finder Finder) RequireString(paths ...interface{}) string {
 	return s
 }
 
-func (finder Finder) FindInt(paths ...interface{}) (int64, error) {
+func (finder Finder) FindInt64(paths ...interface{}) (int64, error) {
 	if s := finder.findFormString(paths...); s != "" {
 		return strconv.ParseInt(s, 10, 64)
 	}
@@ -214,8 +213,8 @@ func (finder Finder) FindInt(paths ...interface{}) (int64, error) {
 	return num.Int64()
 }
 
-func (finder Finder) FindPositiveInt(paths ...interface{}) (int64, error) {
-	integer, err := finder.FindInt(paths...)
+func (finder Finder) FindPositiveInt64(paths ...interface{}) (int64, error) {
+	integer, err := finder.FindInt64(paths...)
 	if err != nil {
 		return integer, err
 	}
@@ -225,16 +224,21 @@ func (finder Finder) FindPositiveInt(paths ...interface{}) (int64, error) {
 	return integer, nil
 }
 
-func (finder Finder) RequireInt(paths ...interface{}) int64 {
-	i, err := finder.FindInt(paths...)
+// work fine with Default()
+func (finder Finder) RequireInt64(paths ...interface{}) int64 {
+	i, err := finder.FindInt64(paths...)
+	if err != nil && finder.defaultValue != nil {
+		i = finder.defaultValue.(int64)
+		err = nil
+	}
 	if err != nil {
 		doPanic(InvalidErrorFormat, paths...)
 	}
 	return i
 }
 
-func (finder Finder) RequirePositiveInt(paths ...interface{}) int64 {
-	i := finder.RequireInt(paths...)
+func (finder Finder) RequirePositiveInt64(paths ...interface{}) int64 {
+	i := finder.RequireInt64(paths...)
 	if i <= 0 {
 		doPanic(NotPositiveErrorFormat, paths...)
 	}

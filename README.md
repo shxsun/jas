@@ -45,7 +45,7 @@ JAS router do not use regular expression, the routing performance would be const
 
 ## Install
 
-    go get github.com/coocood/jas
+    go get github.com/shxsun/jas
 
 Only depends on a small assert package `github.com/coocood/assrt` for testing.
 
@@ -60,7 +60,7 @@ Define a struct type and its methods, methods should have one argement of type *
     	//response: `{"data":"hello world","error":null}`
 
     }
-    func (*Hello) Post (ctx *jas.Context) { // `GET /v1/hello`
+    func (*Hello) Post (ctx *jas.Context) { // `POST /v1/hello`
 		ctx.Error = errors.New("fatal")
     	//response: `{"data":null,"error":"fatal"}`
 	}
@@ -82,11 +82,11 @@ Default value, if no value request, then default value used(now only RequireStri
 
 ## Documentation
 
-See [Gowalker](http://gowalker.org/github.com/coocood/jas) or [godoc](http://godoc.org/github.com/coocood/jas) for complete documentation.
+See [Gowalker](http://gowalker.org/github.com/shxsun/jas) or [godoc](http://godoc.org/github.com/shxsun/jas) for complete documentation.
 
 ## LICENSE
 
-JAS is distributed under the terms of the MIT License. See [LICENSE](https://github.com/coocood/jas/blob/master/LICENSE) for details.
+JAS is distributed under the terms of the MIT License. See [LICENSE](https://github.com/shxsun/jas/blob/master/LICENSE) for details.
 
 ## Contributiors
 

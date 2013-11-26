@@ -23,7 +23,7 @@ type Context struct {
 	ResponseHeader http.Header
 	Callback       string //jsonp callback
 	Status         int
-	Error          AppError
+	Error          error
 	Data           interface{} //The data to be written after the resource method has returned.
 	UserId         int64
 	Id             int64
@@ -86,20 +86,20 @@ func (ctx *Context) AddCookie(cookie *http.Cookie) {
 }
 
 func (ctx *Context) deferredResponse() {
+	var appErr AppError
 	if x := recover(); x != nil {
-		var appErr AppError
 		if handled, ok := x.(AppError); ok {
 			appErr = handled
 		} else {
 			appErr = NewInternalError(x)
 		}
-		ctx.Error = appErr
 	}
 	var resp Response
 	resp.Data = ctx.Data
 	if ctx.Error != nil {
-		ctx.Status = ctx.Error.Status()
-		resp.Error = ctx.Error.Message()
+		appErr = NewRequestError(ctx.Error.Error())
+		ctx.Status = appErr.Status()
+		resp.Error = appErr.Message()
 	}
 	var written int
 	if ctx.config.HijackWrite != nil {
@@ -125,12 +125,12 @@ func (ctx *Context) deferredResponse() {
 			}
 		}
 	}
-	if ctx.Error != nil {
+	if appErr != nil {
 		ctx.written += written
 		ctx.writer = nil
-		ctx.Error.Log(ctx)
+		appErr.Log(ctx)
 		if ctx.config.OnAppError != nil {
-			go ctx.config.OnAppError(ctx.Error, ctx)
+			go ctx.config.OnAppError(appErr, ctx)
 		}
 	}
 }

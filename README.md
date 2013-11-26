@@ -58,7 +58,12 @@ Define a struct type and its methods, methods should have one argement of type *
     func (*Hello) Get (ctx *jas.Context) { // `GET /v1/hello`
     	ctx.Data = "hello world"
     	//response: `{"data":"hello world","error":null}`
+
     }
+    func (*Hello) Post (ctx *jas.Context) { // `GET /v1/hello`
+		ctx.Error = errors.New("fatal")
+    	//response: `{"data":null,"error":"fatal"}`
+	}
 
     func main () {
         router := jas.NewRouter(new(Hello))
